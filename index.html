@@ -406,9 +406,9 @@ body::before {
   left: 0;
   width: 100%;
   background: var(--accent);
-  height: 0%; /* Updated by JS */
+  height: var(--scroll-percent, 0%);
   box-shadow: 0 0 15px var(--accent-glow);
-  transition: height 0.1s linear;
+  transition: height 0.1s linear, width 0.1s linear;
 }
 
 .tracker-dot {
@@ -482,7 +482,58 @@ body::before {
 
 @media (max-width: 768px) {
   .side-tracker {
-    display: none;
+    flex-direction: row;
+    top: auto;
+    bottom: 1rem;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    padding: 0.5rem 1rem;
+    height: auto;
+  }
+
+  .side-tracker.hidden {
+    transform: translateX(-50%) translateY(40px);
+  }
+
+  .tracker-percent {
+    font-size: 0.7rem;
+  }
+
+  .tracker-rail {
+    width: 100%;
+    height: 2px;
+    flex-direction: row;
+  }
+
+  .tracker-fill {
+    width: var(--scroll-percent, 0%);
+    height: 100%;
+  }
+
+  .tracker-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Hover tooltips go up on mobile */
+  .tracker-dot::before {
+    right: 50%;
+    top: -25px;
+    transform: translateX(50%);
+  }
+
+  .tracker-dot:hover::before {
+    right: 50%;
+    top: -30px;
+  }
+
+  .tracker-label {
+    writing-mode: horizontal-tb;
+    letter-spacing: 2px;
+    font-size: 0.65rem;
   }
 }
 
@@ -2467,31 +2518,6 @@ body.nav-open .nav-toggle span:nth-child(3) {
    Responsive — Tablet & Below (≤ 768px)
    ============================================================ */
 @media (max-width: 768px) {
-  .nav-toggle {
-    display: flex;
-  }
-
-  .nav-links {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 70%;
-    max-width: 300px;
-    height: 100vh;
-    background: rgba(5, 5, 8, 0.98);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    flex-direction: column;
-    padding: 6rem 2rem;
-    gap: 2rem;
-    transition: right 0.4s ease;
-    border-left: 1px solid rgba(0, 255, 65, 0.08);
-  }
-
-  body.nav-open .nav-links {
-    right: 0;
-  }
-
   .about-grid,
   .contact-grid {
     grid-template-columns: 1fr;
@@ -2506,7 +2532,7 @@ body.nav-open .nav-toggle span:nth-child(3) {
   }
 
   .bento-tall { grid-row: span 1; }
-  .bento-wide { grid-column: span 2; }
+  .bento-wide { grid-column: span 1; } /* Fixed overflow on mobile */
 
   .hero-stats {
     flex-direction: column;
@@ -2519,11 +2545,24 @@ body.nav-open .nav-toggle span:nth-child(3) {
   }
 
   .section {
-    padding: 5rem 0;
+    padding: 4rem 0;
   }
 
   .hero-section {
     min-height: 100dvh;
+    padding-top: 2rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .terminal-card {
+    margin-top: 1rem;
   }
 
   /* Timeline — Mobile */
@@ -3346,7 +3385,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const scrolled = window.scrollY;
       const percent = Math.min(100, Math.max(0, Math.round((scrolled / scrollable) * 100)));
       
-      trackerFill.style.height = percent + '%';
+      trackerFill.style.setProperty('--scroll-percent', percent + '%');
       trackerPercent.textContent = String(percent).padStart(2, '0');
 
       /* Determine active section */
@@ -3853,5 +3892,3 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
 </body>
 </html>
-
-<!-- nothig -->
